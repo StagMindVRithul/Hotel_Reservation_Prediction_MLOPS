@@ -3,26 +3,46 @@ FROM python:slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
+
+
+# ARG
+
+ARG GOOGLE_APPLICATION_CREDENTIALS_PATH
+ENV GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
+
 WORKDIR /app
 
-# Install dependencies
+
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy project files
+
+
 COPY . .
 
-# Copy Credentials File (use your actual file name here)
-COPY secrets/shaped-manifest-457208-f6-00c80b4ae9f0.json /app/credentials.json
 
-# Install Python dependencies
+
+# Copy Credentials File
+
+COPY ${GOOGLE_APPLICATION_CREDENTIALS_PATH} /app/credentials.json
+
+
+# Installl 
 RUN pip install --no-cache-dir -e .
 
-# Run GCP pipeline
+
+
+# GCP işlemlerini bu aşamada yapma
+
 RUN python pipeline/training_pipeline.py
 
+
+#RUNNNN
 EXPOSE 5000
 
+
+#RUN
 CMD ["python", "application.py"]
