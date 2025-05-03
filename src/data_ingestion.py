@@ -8,7 +8,6 @@ from config.paths_config import *
 from utils.common_functions import read_yaml
 
 logger = get_logger(__name__)
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/app/credentials.json"
 
 class DataIngestion:
     def __init__(self, config):
