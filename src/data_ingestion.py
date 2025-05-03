@@ -6,6 +6,7 @@ from src.logger import get_logger
 from src.custom_exception import CustomException
 from config.paths_config import *
 from utils.common_functions import read_yaml
+from google.oauth2 import service_account
 
 logger = get_logger(__name__)
 
@@ -21,7 +22,8 @@ class DataIngestion:
     
     def download_csv_from_gcp(self):
         try:
-            client = storage.Client()
+            credentials = service_account.Credentials.from_service_account_file('/app/sa-key.json')
+            client = storage.Client(credentials=credentials, project=credentials.project_id)
             bucket = client.get_bucket(self.bucket_name)
             blob = bucket.blob(self.file_name)
             blob.download_to_filename(RAW_FILE_PATH)

@@ -1,32 +1,25 @@
-# Use the official Jenkins LTS base image
+# Use the Jenkins image as the base image
 FROM jenkins/jenkins:lts
 
-# Switch to root user to install packages
+# Switch to root user to install dependencies
 USER root
 
-# Install Python 3.13.3 and other utilities
-RUN apt-get update && \
-    apt-get install -y wget build-essential zlib1g-dev libssl-dev libncurses5-dev libffi-dev libsqlite3-dev libbz2-dev libreadline-dev liblzma-dev libgdbm-dev libnss3-dev libxml2-dev libxmlsec1-dev && \
-    cd /usr/src && \
-    wget https://www.python.org/ftp/python/3.13.3/Python-3.13.3.tgz && \
-    tar xzf Python-3.13.3.tgz && \
-    cd Python-3.13.3 && \
-    ./configure --enable-optimizations && \
-    make -j$(nproc) && \
-    make altinstall && \
-    ln -s /usr/local/bin/python3.13 /usr/bin/python3.13 && \
-    ln -s /usr/local/bin/pip3.13 /usr/bin/pip3.13 && \
-    rm -rf /usr/src/Python-3.13.3*
+# Install prerequisites and Docker
+RUN apt-get update -y && \
+    apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release software-properties-common && \
+    curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list && \
+    apt-get update -y && \
+    apt-get install -y docker-ce docker-ce-cli containerd.io && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Verify Python version
-RUN python3.13 --version && pip3.13 --version
+# Add Jenkins user to the Docker group
+RUN groupadd -f docker && usermod -aG docker jenkins
 
-# Setup a virtual environment (optional but ready)
-RUN python3.13 -m venv /opt/jenkins-venv
+# Create the Docker directory and volume for DinD
+RUN mkdir -p /var/lib/docker
+VOLUME /var/lib/docker
 
-# Fix permissions and switch back to Jenkins user
-RUN chown -R jenkins:jenkins /opt/jenkins-venv
+# Switch back to the Jenkins user
 USER jenkins
-
-# Default Jenkins ports
-EXPOSE 8080 50000
