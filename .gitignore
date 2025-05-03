@@ -2,4 +2,3 @@ venv/
 mlruns/
 logs/
 mlops_hotel_reservation.egg-info/
-secrets/
