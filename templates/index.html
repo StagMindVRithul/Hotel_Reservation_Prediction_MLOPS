@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static',filename='style.css')}}">
+    <title>HOTEL RESERVATION PREDICTION</title>
+</head>
+<body>
+<div class="container">
+    <h2>🏨 Hotel Reservation Prediction</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="lead_time">Lead Time</label>
+            <input type="number" id="lead_time" name="lead_time" value="{{ request.form.lead_time }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="no_of_special_requests">No of Special Requests</label>
+            <input type="number" id="no_of_special_requests" name="no_of_special_requests" value="{{ request.form.no_of_special_requests }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="avg_price_per_room">Average Price Per Room</label>
+            <input type="number" id="avg_price_per_room" name="avg_price_per_room" value="{{ request.form.avg_price_per_room }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="arrival_month">Arrival Month</label>
+            <select id="arrival_month" name="arrival_month" required>
+                {% for i in range(1,13) %}
+                <option value="{{ i }}" {% if request.form.arrival_month == i|string %}selected{% endif %}>
+                    {{ ['January','February','March','April','May','June','July','August','September','October','November','December'][i-1] }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="arrival_date">Arrival Date</label>
+            <select id="arrival_date" name="arrival_date" required>
+                {% for i in range(1,32) %}
+                <option value="{{ i }}" {% if request.form.arrival_date == i|string %}selected{% endif %}>{{ i }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="market_segment_type">Market Segment Type</label>
+            <select id="market_segment_type" name="market_segment_type" required>
+                <option value="0" {% if request.form.market_segment_type == '0' %}selected{% endif %}>Aviation</option>
+                <option value="1" {% if request.form.market_segment_type == '1' %}selected{% endif %}>Complementary</option>
+                <option value="2" {% if request.form.market_segment_type == '2' %}selected{% endif %}>Corporate</option>
+                <option value="3" {% if request.form.market_segment_type == '3' %}selected{% endif %}>Offline</option>
+                <option value="4" {% if request.form.market_segment_type == '4' %}selected{% endif %}>Online</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="no_of_week_nights">No Of Week Nights</label>
+            <input type="number" id="no_of_week_nights" name="no_of_week_nights" value="{{ request.form.no_of_week_nights }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="no_of_weekend_nights">No Of Weekend Nights</label>
+            <input type="number" id="no_of_weekend_nights" name="no_of_weekend_nights" value="{{ request.form.no_of_weekend_nights }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="type_of_meal_plan">Type of Meal Plan</label>
+            <select id="type_of_meal_plan" name="type_of_meal_plan" required>
+                <option value="0" {% if request.form.type_of_meal_plan == '0' %}selected{% endif %}>Meal Plan 1</option>
+                <option value="1" {% if request.form.type_of_meal_plan == '1' %}selected{% endif %}>Meal Plan 2</option>
+                <option value="2" {% if request.form.type_of_meal_plan == '2' %}selected{% endif %}>Meal Plan 3</option>
+                <option value="3" {% if request.form.type_of_meal_plan == '3' %}selected{% endif %}>Not Selected</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="room_type_reserved">Room Type Reserved</label>
+            <select id="room_type_reserved" name="room_type_reserved" required>
+                <option value="0" {% if request.form.room_type_reserved == '0' %}selected{% endif %}>Room_Type 1</option>
+                <option value="1" {% if request.form.room_type_reserved == '1' %}selected{% endif %}>Room_Type 2</option>
+                <option value="2" {% if request.form.room_type_reserved == '2' %}selected{% endif %}>Room_Type 3</option>
+                <option value="3" {% if request.form.room_type_reserved == '3' %}selected{% endif %}>Room_Type 4</option>
+                <option value="4" {% if request.form.room_type_reserved == '4' %}selected{% endif %}>Room_Type 5</option>
+                <option value="5" {% if request.form.room_type_reserved == '5' %}selected{% endif %}>Room_Type 6</option>
+                <option value="6" {% if request.form.room_type_reserved == '6' %}selected{% endif %}>Room_Type 7</option>
+            </select>
+        </div>
+
+        <button type="submit">Predict</button>
+    </form>
+
+    {% if prediction is not none %} 
+    <div class="result">
+        {% if prediction == 0 %}
+        <p class="cancel">🚫 The Customer is going to cancel the reservation!</p>
+        {% elif prediction == 1 %}
+        <p class="success">✅ The Customer is NOT going to cancel the reservation!</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+</body>
+</html>
