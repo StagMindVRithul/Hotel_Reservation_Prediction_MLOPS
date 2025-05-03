@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY . .
 
 # Copy Credentials File (use your actual file name here)
-COPY /Users/rithul.v/Desktop/Hotel_Reservation_Project/shaped-manifest-457208-f6-00c80b4ae9f0.json /app/credentials.json
+COPY shaped-manifest-457208-f6-00c80b4ae9f0.json /app/credentials.json
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -e .
