@@ -3,9 +3,6 @@ FROM python:slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-# Set Google credentials env
-ENV GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
-
 WORKDIR /app
 
 # Install dependencies
