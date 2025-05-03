@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-service-account')
+        GOOGLE_APPLICATION_CREDENTIALS = credentials('GCP-KEY')
     }
     stages {
         stage('Cloning Github Repo to Jenkins') {
