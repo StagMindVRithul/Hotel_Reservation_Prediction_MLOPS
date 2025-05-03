@@ -22,7 +22,7 @@ pipeline {
                 echo 'Running in Python 3.12 Docker and Installing deps............'
                 script {
                     sh '''
-                    docker run --rm -v $(pwd):/app -w /app python:3.13.3 bash -c "
+                    docker run --rm -v $(pwd):/app -w /app python bash -c "
                         python -m venv venv &&
                         . venv/bin/activate &&
                         pip install --upgrade pip &&
