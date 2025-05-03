@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY . .
 
 # Install the package in editable mode
-RUN pip install --no-cache-dir -e .
+RUN pip install --no-cache-dir -e . -i https://pypi.python.org/simple --default-timeout=100
 
 # Train the model before running the application
 RUN python pipeline/training_pipeline.py
