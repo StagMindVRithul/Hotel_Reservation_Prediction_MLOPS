@@ -10,5 +10,5 @@ setup(
     description='A MLOps project for hotel reservation prediction',
     packages=find_packages(),
     install_requires=requirements,
-    python_requires='>=3.12'
+    python_requires='>=3.11'
 )
