@@ -1,4 +1,4 @@
-pipeline {
+pipeline{
     agent any
 
     environment {
@@ -7,23 +7,23 @@ pipeline {
         GCLOUD_PATH = "/var/jenkins_home/google-cloud-sdk/bin"
     }
 
-    stages {
-        stage('Cloning Github Repo to Jenkins') {
-            steps {
-                script {
-                    echo 'Cloning Github repo to Jenkins.........'
+    stages{
+        stage('Cloning Github Repo to Jenkins'){
+            steps{
+                script{
+                    echo 'Cloniing Github repo to Jenkins.........'
                     checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github-token', url: 'https://github.com/StagMindVRithul/Hotel_Reservation_Prediction_MLOPS.git']])
                 }
             }
         }
 
-        stage('Setting up our Virtual Environment and Installing Dependencies') {
-            steps {
-                script {
-                    echo 'Setting up our Virtual Environment and Installing dependencies............'
+         stage('Setting up our Virtual Environment and Installing dependancies'){
+            steps{
+                script{
+                    echo 'Setting up our Virtual Environment and Installing dependancies............'
                     sh '''
                     python -m venv ${VENV_DIR}
-                    source ${VENV_DIR}/bin/activate
+                    . ${VENV_DIR}/bin/activate
                     pip install --upgrade pip
                     pip install -e .
                     '''
@@ -31,10 +31,10 @@ pipeline {
             }
         }
 
-        stage('Building and Pushing Docker Image to GCR') {
-            steps {
-                withCredentials([file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-                    script {
+        stage('Building and Pushing Docker Image to GCR'){
+            steps{
+                withCredentials([file(credentialsId: 'gcp-key' , variable : 'GOOGLE_APPLICATION_CREDENTIALS')]){
+                    script{
                         echo 'Building and Pushing Docker Image to GCR.............'
                         sh '''
                         export PATH=$PATH:${GCLOUD_PATH}
@@ -45,9 +45,10 @@ pipeline {
 
                         gcloud auth configure-docker --quiet
 
-                        docker build --build-arg GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS} -t gcr.io/${GCP_PROJECT}/ml-project:latest .
+                        docker build -t gcr.io/${GCP_PROJECT}/ml-project:latest .
 
-                        docker push gcr.io/${GCP_PROJECT}/ml-project:latest
+                        docker push gcr.io/${GCP_PROJECT}/ml-project:latest 
+
                         '''
                     }
                 }
@@ -55,3 +56,4 @@ pipeline {
         }
     }
 }
+
