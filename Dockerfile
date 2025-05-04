@@ -9,7 +9,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 # Copy GCP key before installing anything (best practice)
-COPY gcp_key.json ./gcp_key.json
+COPY shaped-manifest-457208-f6-06ca6dbc0b40.json /app/gcp_key.json
 ENV GOOGLE_APPLICATION_CREDENTIALS="/app/gcp_key.json"
 
 # Install system dependencies required by LightGBM
