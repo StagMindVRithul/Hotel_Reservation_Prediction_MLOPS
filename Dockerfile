@@ -20,12 +20,6 @@ COPY . .
 # Install the package in editable mode
 RUN pip install --no-cache-dir -e .
 
-# Copy your gcp-key.json into the container
-COPY ./gcp-key.json /app/gcp-key.json
-
-# Set env var inside container
-ENV GOOGLE_APPLICATION_CREDENTIALS="/app/gcp-key.json"
-
 # Train the model before running the application
 RUN python pipeline/training_pipeline.py
 
