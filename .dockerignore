@@ -1,0 +1,5 @@
+gcp_key.json
+*.json
+.env
+__pycache__/
+*.pyc

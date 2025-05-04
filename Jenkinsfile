@@ -57,8 +57,9 @@ pipeline {
                         echo 'Running Docker Container Locally with GCP Credentials...'
                         sh '''
                         docker run -e GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-key.json \
-                          -v $GCP_KEY:/app/gcp-key.json \
-                          gcr.io/${GCP_PROJECT}/ml-project:latest
+                        -v /Users/rithul.v/Desktop/Hotel_Reservation_Project/gcp_key.json:/app/gcp-key.json \
+                        my-ml-image \
+                        python pipeline/training_pipeline.py
                         '''
                     }
                 }
