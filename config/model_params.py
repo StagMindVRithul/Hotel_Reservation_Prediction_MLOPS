@@ -9,7 +9,7 @@ LIGHTGBM_PARAMS = {
 }
 
 RANDOM_SEARCH_PARAMS = {
-    'n_iter' : 100,
+    'n_iter' : 2,
     'cv' : 5,
     'n_jobs' : -1,
     'verbose' : 2,
