@@ -59,7 +59,7 @@ pipeline {
                         docker run -e GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-key.json \
                         -v /Users/rithul.v/Desktop/Hotel_Reservation_Project/gcp_key.json:/app/gcp-key.json \
                         jenkins-dind \
-                        python pipeline/training_pipeline.py
+                        python3 pipeline/training_pipeline.py
                         '''
                     }
                 }
