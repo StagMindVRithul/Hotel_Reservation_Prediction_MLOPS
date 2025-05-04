@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 python:3.10-slim
+FROM python:slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
@@ -25,6 +25,9 @@ COPY ${GOOGLE_APPLICATION_CREDENTIALS_PATH} /app/credentials.json
 
 # Install the required Python dependencies
 RUN pip install --no-cache-dir -e .
+
+# Train the model before running the application
+RUN python pipeline/training_pipeline.py
 
 # Expose the port that the app will use
 EXPOSE 8080
