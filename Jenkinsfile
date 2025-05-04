@@ -5,7 +5,7 @@ pipeline {
         VENV_DIR = 'venv'
         GCP_PROJECT = "shaped-manifest-457208-f6"
         GCLOUD_PATH = "/var/jenkins_home/google-cloud-sdk/bin"
-        IMAGE_NAME = "gcr.io/${GCP_PROJECT}/ml-project:latest"
+        IMAGE_NAME = "gcr.io/${GCP_PROJECT}/ml-project:${BUILD_NUMBER}"
     }
 
     stages {
@@ -13,7 +13,14 @@ pipeline {
             steps {
                 script {
                     echo 'Cloning Github repo to Jenkins............'
-                    checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github-token', url: 'https://github.com/StagMindVRithul/Hotel_Reservation_Prediction_MLOPS.git']])
+                    checkout scmGit(
+                        branches: [[name: '*/main']], 
+                        extensions: [], 
+                        userRemoteConfigs: [[
+                            credentialsId: 'github-token', 
+                            url: 'https://github.com/StagMindVRithul/Hotel_Reservation_Prediction_MLOPS.git'
+                        ]]
+                    )
                 }
             }
         }
@@ -39,13 +46,14 @@ pipeline {
                         echo 'Building and Pushing Docker Image to GCR.............'
                         sh '''
                         export PATH=$PATH:${GCLOUD_PATH}
-
+                        
+                        # Authenticate and configure Docker
                         gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
                         gcloud config set project ${GCP_PROJECT}
                         gcloud auth configure-docker --quiet
-
+                        
+                        # Build and push Docker image
                         docker build -t ${IMAGE_NAME} .
-
                         docker push ${IMAGE_NAME}
                         '''
                     }
@@ -53,17 +61,34 @@ pipeline {
             }
         }
 
-        stage('Running Training inside Docker') {
+        stage('Run Training Pipeline') {
+            steps {
+                script {
+                    echo 'Running Training Pipeline............'
+                    sh '''
+                    . ${VENV_DIR}/bin/activate
+                    python pipeline/training_pipeline.py
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to Google Cloud Run') {
             steps {
                 withCredentials([file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                     script {
-                        echo 'Running training pipeline inside Docker container.............'
+                        echo 'Deploying to Google Cloud Run.............'
                         sh '''
-                        docker run --rm \
-                          -e GOOGLE_APPLICATION_CREDENTIALS=/key.json \
-                          -v $GOOGLE_APPLICATION_CREDENTIALS:/key.json:ro \
-                          ${IMAGE_NAME} \
-                          python pipeline/training_pipeline.py
+                        export PATH=$PATH:${GCLOUD_PATH}
+
+                        gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+                        gcloud config set project ${GCP_PROJECT}
+
+                        gcloud run deploy ml-project \
+                            --image=${IMAGE_NAME} \
+                            --platform=managed \
+                            --region=us-central1 \
+                            --allow-unauthenticated
                         '''
                     }
                 }
