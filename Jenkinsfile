@@ -36,6 +36,8 @@ pipeline{
                 withCredentials([file(credentialsId: 'gcp-key' , variable : 'GOOGLE_APPLICATION_CREDENTIALS')]){
                     script{
                         echo 'Building and Pushing Docker Image to GCR.............'
+                        sh 'cp $GOOGLE_APPLICATION_CREDENTIALS gcp_key.json'
+
                         sh '''
                         export PATH=$PATH:${GCLOUD_PATH}
 
@@ -51,6 +53,7 @@ pipeline{
                         docker push gcr.io/${GCP_PROJECT}/ml-project:latest 
 
                         '''
+                        sh 'rm gcp_key.json'
                     }
                 }
             }
