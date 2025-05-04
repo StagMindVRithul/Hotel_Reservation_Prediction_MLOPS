@@ -15,21 +15,24 @@ pipeline {
                     checkout scmGit(
                         branches: [[name: '*/main']],
                         extensions: [],
-                        userRemoteConfigs: [[credentialsId: 'github-token', url: 'https://github.com/StagMindVRithul/Hotel_Reservation_Prediction_MLOPS.git']]
+                        userRemoteConfigs: [[
+                            credentialsId: 'github-token',
+                            url: 'https://github.com/StagMindVRithul/Hotel_Reservation_Prediction_MLOPS.git'
+                        ]]
                     )
                 }
             }
         }
 
-        stage('Setting up our Virtual Enviornment and Installing Dependencies') {
+        stage('Setting up our Virtual Environment and Installing Dependencies') {
             steps {
                 script {
-                    echo 'Setting up our Virtual Enviornment and Installing Dependencies............'
+                    echo 'Setting up our Virtual Environment and Installing Dependencies............'
                     sh '''
-                    python -m venv ${VENV_DIR}
-                    . ${VENV_DIR}/bin/activate
-                    pip install --upgrade pip
-                    pip install -e .
+                        python -m venv ${VENV_DIR}
+                        . ${VENV_DIR}/bin/activate
+                        pip install --upgrade pip
+                        pip install -e .
                     '''
                 }
             }
@@ -41,19 +44,20 @@ pipeline {
                     script {
                         echo 'Building and Pushing Docker Image to GCR.............'
                         sh '''
-                        echo "$GCP_KEY_JSON" > /tmp/gcp-key.json
+                            # Write JSON properly (fix control character error)
+                            echo "$GCP_KEY_JSON" | sed 's/\\\\n/\\n/g' > /tmp/gcp-key.json
 
-                        export PATH=$PATH:${GCLOUD_PATH}
+                            export PATH=$PATH:${GCLOUD_PATH}
 
-                        gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
+                            gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
+                            gcloud config set project ${GCP_PROJECT}
+                            gcloud auth configure-docker --quiet
 
-                        gcloud config set project ${GCP_PROJECT}
+                            docker build -t gcr.io/${GCP_PROJECT}/ml-project:latest .
+                            docker push gcr.io/${GCP_PROJECT}/ml-project:latest 
 
-                        gcloud auth configure-docker --quiet
-
-                        docker build -t gcr.io/${GCP_PROJECT}/ml-project:latest .
-
-                        docker push gcr.io/${GCP_PROJECT}/ml-project:latest 
+                            # Cleanup
+                            rm /tmp/gcp-key.json
                         '''
                     }
                 }
