@@ -27,7 +27,7 @@ COPY ${GOOGLE_APPLICATION_CREDENTIALS_PATH} /app/credentials.json
 RUN pip install --no-cache-dir -e .
 
 # Expose the port that the app will use
-EXPOSE 5000
+EXPOSE 8080
 
 # Default command to run the application
 CMD ["python", "application.py"]
