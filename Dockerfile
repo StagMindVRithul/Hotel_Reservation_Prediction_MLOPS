@@ -8,9 +8,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Set the working directory
 WORKDIR /app
 
-# Copy GCP key before installing anything (best practice)
-COPY shaped-manifest-457208-f6-06ca6dbc0b40.json /app/gcp_key.json
+# Copy GCP key from project root (outside app/) into /app/ inside Docker
+COPY gcp_key.json /app/gcp_key.json
 ENV GOOGLE_APPLICATION_CREDENTIALS="/app/gcp_key.json"
+
 
 # Install system dependencies required by LightGBM
 RUN apt-get update && apt-get install -y --no-install-recommends \

@@ -2,3 +2,4 @@ venv/
 mlruns/
 logs/
 mlops_hotel_reservation.egg-info/
+gcp_key.json
