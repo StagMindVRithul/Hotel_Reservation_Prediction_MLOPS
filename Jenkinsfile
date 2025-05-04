@@ -44,10 +44,10 @@ pipeline {
                     script {
                         echo 'Building and Pushing Docker Image to GCR.............'
                         sh '''
-                            # Write JSON properly (fix control character error)
-                            echo "$GCP_KEY_JSON" | sed 's/\\\\n/\\n/g' > /tmp/gcp-key.json
-
                             export PATH=$PATH:${GCLOUD_PATH}
+
+                            # Authenticate using JSON key passed via env
+                            echo "$GCP_KEY_JSON" > /tmp/gcp-key.json
 
                             gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
                             gcloud config set project ${GCP_PROJECT}
