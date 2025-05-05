@@ -8,11 +8,7 @@ app = Flask(__name__)
 
 loaded_model = joblib.load(MODEL_OUTPUT_PATH)
 
-@app.route('/')
-def home():   ##HOMEPAGE
-    return render_template('home.html')
-
-@app.route('/predict',methods=['GET','POST']) ## Prediction Page
+@app.route('/',methods=['GET','POST'])
 def index():
     if request.method=="POST":
         lead_time = int(request.form['lead_time'])
